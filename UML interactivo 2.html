@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía Interactiva de Diagramas UML</title>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&family=Shrikhand&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --surface: #141728;
+      --surface2: #1c2035;
+      --border: #252a42;
+      --accent: #5b6ef5;
+      --accent2: #f05a7e;
+      --accent3: #36d9b1;
+      --text: #e2e5f3;
+      --text-muted: #7a81a8;
+      --mono: 'Courier Prime', monospace;
+      --sans: 'Itim', cursive;
+      --display: 'Shrikhand', cursive;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── BACKGROUND GRID ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(91,110,245,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,110,245,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 60px 40px 40px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(91,110,245,0.08) 0%, transparent 100%);
+    }
+
+    .header-tag {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    header h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-family: var(--display);
+      font-weight: 400;
+      letter-spacing: 1px;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      color: #b0b8d8;
+      font-size: 15px;
+      font-family: var(--mono);
+    }
+
+    /* ─── LAYOUT ─── */
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 200px);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── SIDEBAR NAV ─── */
+    nav {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .nav-label {
+      font-family: var(--mono);
+      font-size: 15px;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase;
+      padding: 0 24px 12px;
+    }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 24px;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 400;
+      font-family: var(--sans);
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+    }
+
+    nav a:hover {
+      color: var(--text);
+      background: rgba(91,110,245,0.06);
+    }
+
+    nav a.active {
+      color: var(--accent);
+      background: rgba(91,110,245,0.1);
+      border-left-color: var(--accent);
+    }
+
+    .nav-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    nav a.active .nav-icon { background: rgba(91,110,245,0.2); }
+
+    .nav-badge {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 12px;
+      background: var(--surface2);
+      padding: 2px 7px;
+      border-radius: 10px;
+      color: #ffffff;
+    }
+
+    /* ─── CONTENT ─── */
+    main {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    section {
+      display: none;
+      animation: fadeSlide 0.4s ease;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION HERO ─── */
+    .section-hero {
+      padding: 40px 48px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .hero-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .hero-content { flex: 1; }
+
+    .type-tag {
+      font-family: var(--mono);
+      font-size: 22px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .section-hero h2 {
+      font-family: var(--display);
+      font-size: 2.2rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .section-hero .desc {
+      color: #c8cfe8;
+      font-family: var(--sans);
+      font-size: 20px;
+      line-height: 1.65;
+      max-width: 600px;
+    }
+
+    /* ─── INFO GRID ─── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-card {
+      background: var(--surface);
+      padding: 24px 32px;
+    }
+
+    .info-card-label {
+      font-family: var(--mono);
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: #c8cfe8;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .info-card p {
+      font-family: var(--sans);
+      font-size: 20px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* ─── DIAGRAM AREA ─── */
+    .diagram-area {
+      padding: 40px 48px;
+    }
+
+    .diagram-label {
+      font-family: var(--mono);
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #c8cfe8;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diagram-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .diagram-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 340px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .diagram-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(91,110,245,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ─── EXAMPLES ─── */
+    .examples-section {
+      padding: 0 48px 48px;
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .example-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .example-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .example-card-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .example-card p {
+      font-family: var(--sans);
+      font-size: 15px;
+      color: #c8cfe8;
+      line-height: 1.5;
+    }
+
+    /* ─── SVG DIAGRAMS ─── */
+    svg text { font-family: 'Itim', cursive; }
+
+    /* ─── COMPONENTS specific ─── */
+    .actor-group { cursor: default; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 13px;
+      color: #b0b8d8;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      nav { position: static; height: auto; display: flex; flex-wrap: wrap; padding: 12px; gap: 4px; }
+      nav a { padding: 8px 14px; font-size: 12px; border-left: none; border-bottom: 2px solid transparent; }
+      nav a.active { border-bottom-color: var(--accent); border-left: none; }
+      .section-hero { flex-direction: column; gap: 16px; padding: 24px; }
+      .info-grid { grid-template-columns: 1fr; }
+      .diagram-area, .examples-section { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="header-tag"></span>
+  <h1>Guía de Diagramas UML</h1>
+  <p>Unified Modeling Language · 7 tipos · definición · notación · ejemplos</p>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="nav-label">Tipos de Diagrama</div>
+    <a onclick="mostrar('casos')" class="active" id="nav-casos">
+      <span class="nav-icon">👤</span> Casos de Uso <span class="nav-badge">comportamiento</span>
+    </a>
+    <a onclick="mostrar('clases')" id="nav-clases">
+      <span class="nav-icon">📦</span> Clases <span class="nav-badge">estructura</span>
+    </a>
+    <a onclick="mostrar('secuencia')" id="nav-secuencia">
+      <span class="nav-icon">↔️</span> Secuencia <span class="nav-badge">interacción</span>
+    </a>
+    <a onclick="mostrar('actividades')" id="nav-actividades">
+      <span class="nav-icon">🔀</span> Actividades <span class="nav-badge">comportamiento</span>
+    </a>
+    <a onclick="mostrar('estado')" id="nav-estado">
+      <span class="nav-icon">🔄</span> Estado <span class="nav-badge">comportamiento</span>
+    </a>
+    <a onclick="mostrar('componentes')" id="nav-componentes">
+      <span class="nav-icon">🧩</span> Componentes <span class="nav-badge">estructura</span>
+    </a>
+    <a onclick="mostrar('despliegue')" id="nav-despliegue">
+      <span class="nav-icon">🖥️</span> Despliegue <span class="nav-badge">estructura</span>
+    </a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+
+    <!-- ══════════════════════════════════
+         CASOS DE USO
+    ══════════════════════════════════ -->
+    <section id="casos" class="active">
+      <div class="section-hero">
+        <div class="hero-icon" style="background:rgba(91,110,245,0.15);">👤</div>
+        <div class="hero-content">
+          <div class="type-tag" style="color:var(--accent);">Diagrama de Comportamiento</div>
+          <h2>Casos de Uso</h2>
+          <p class="desc">Muestra las interacciones entre los actores externos y el sistema. Define qué hace el sistema (no cómo), ayudando a capturar requisitos funcionales desde la perspectiva del usuario.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">📌 Cuándo usarlo</div>
+          <p>Al inicio del proyecto para identificar requisitos funcionales y comunicarlos a stakeholders no técnicos.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔑 Elementos clave</div>
+          <p>Actor (muñeco), caso de uso (elipse), sistema (rectángulo), relaciones &laquo;include&raquo; y &laquo;extend&raquo;.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">⚠️ Error común</div>
+          <p>Confundir pasos internos del proceso con casos de uso. Un CU debe ser observable desde fuera del sistema.</p>
+        </div>
+      </div>
+
+      <div class="diagram-area">
+        <div class="diagram-label">Diagrama · Casos de Uso</div>
+        <div class="diagram-box">
+          <svg viewBox="0 0 700 320" width="100%" style="max-width:660px">
+            <!-- System boundary -->
+            <rect x="160" y="20" width="400" height="280" rx="8" fill="none" stroke="#252a42" stroke-width="2"/>
+            <text x="360" y="14" fill="#c8d0e8" font-size="14" text-anchor="middle">«sistema» Aplicación Bancaria</text>
+
+            <!-- Actor: Cliente -->
+            <circle cx="60" cy="120" r="18" fill="none" stroke="#5b6ef5" stroke-width="2"/>
+            <line x1="60" y1="138" x2="60" y2="195" stroke="#5b6ef5" stroke-width="2"/>
+            <line x1="30" y1="162" x2="90" y2="162" stroke="#5b6ef5" stroke-width="2"/>
+            <line x1="60" y1="195" x2="30" y2="230" stroke="#5b6ef5" stroke-width="2"/>
+            <line x1="60" y1="195" x2="90" y2="230" stroke="#5b6ef5" stroke-width="2"/>
+            <text x="60" y="250" fill="#e2e5f3" font-size="16" text-anchor="middle">Cliente</text>
+
+            <!-- Actor: Admin -->
+            <circle cx="640" cy="120" r="18" fill="none" stroke="#f05a7e" stroke-width="2"/>
+            <line x1="640" y1="138" x2="640" y2="195" stroke="#f05a7e" stroke-width="2"/>
+            <line x1="610" y1="162" x2="670" y2="162" stroke="#f05a7e" stroke-width="2"/>
+            <line x1="640" y1="195" x2="610" y2="230" stroke="#f05a7e" stroke-width="2"/>
+            <line x1="640" y1="195" x2="670" y2="230" stroke="#f05a7e" stroke-width="2"/>
+            <text x="640" y="250" fill="#e2e5f3" font-size="16" text-anchor="middle">Admin</text>
+
+            <!-- Use cases -->
+            <ellipse cx="310" cy="80" rx="100" ry="28" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <text x="310" y="84" fill="#e2e5f3" font-size="16" text-anchor="middle">Iniciar Sesión</text>
+
+            <ellipse cx="310" cy="160" rx="100" ry="28" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <text x="310" y="164" fill="#e2e5f3" font-size="16" text-anchor="middle">Consultar Saldo</text>
+
+            <ellipse cx="310" cy="240" rx="100" ry="28" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <text x="310" y="244" fill="#e2e5f3" font-size="16" text-anchor="middle">Transferir Fondos</text>
+
+            <ellipse cx="480" cy="120" rx="100" ry="28" fill="#1c2035" stroke="#f05a7e" stroke-width="2"/>
+            <text x="480" y="124" fill="#e2e5f3" font-size="16" text-anchor="middle">Gestionar Cuentas</text>
+
+            <!-- Associations -->
+            <line x1="80" y1="110" x2="210" y2="85" stroke="#5b6ef5" stroke-width="1.5" stroke-dasharray="none"/>
+            <line x1="80" y1="130" x2="210" y2="155" stroke="#5b6ef5" stroke-width="1.5"/>
+            <line x1="80" y1="150" x2="210" y2="238" stroke="#5b6ef5" stroke-width="1.5"/>
+            <line x1="620" y1="118" x2="580" y2="121" stroke="#f05a7e" stroke-width="1.5"/>
+
+            <!-- Include arrow -->
+            <line x1="310" y1="108" x2="310" y2="132" stroke="#36d9b1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-g)"/>
+            <text x="325" y="124" fill="#36d9b1" font-size="17">«include»</text>
+
+            <defs>
+              <marker id="arrow-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#36d9b1"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <div class="examples-section">
+        <div class="diagram-label">Ejemplos Reales</div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-card-title">E-commerce</div>
+            <p>Cliente busca producto → añade al carrito → pago → confirmación de pedido.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Sistema Bancario</div>
+            <p>Usuario consulta saldo, transfiere, paga servicios. Admin gestiona cuentas y bloqueos.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">App de Salud</div>
+            <p>Paciente agenda cita «include» autenticar. Doctor actualiza historial clínico.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         CLASES
+    ══════════════════════════════════ -->
+    <section id="clases">
+      <div class="section-hero">
+        <div class="hero-icon" style="background:rgba(240,90,126,0.15);">📦</div>
+        <div class="hero-content">
+          <div class="type-tag" style="color:var(--accent2);">Diagrama de Estructura</div>
+          <h2>Diagrama de Clases</h2>
+          <p class="desc">Representa la estructura estática del sistema: las clases, sus atributos, métodos y las relaciones entre ellas. Es el diagrama más utilizado en el diseño orientado a objetos.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">📌 Cuándo usarlo</div>
+          <p>Durante el diseño del sistema para modelar la estructura de clases antes de escribir código.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔑 Relaciones</div>
+          <p>Herencia (flecha hueca), Composición (diamante relleno), Agregación (diamante vacío), Dependencia (flecha punteada).</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">📐 Visibilidad</div>
+          <p><strong>+</strong> público &nbsp; <strong>-</strong> privado &nbsp; <strong>#</strong> protegido &nbsp; <strong>~</strong> paquete</p>
+        </div>
+      </div>
+
+      <div class="diagram-area">
+        <div class="diagram-label">Diagrama · Clases</div>
+        <div class="diagram-box">
+          <svg viewBox="0 0 700 340" width="100%" style="max-width:660px">
+            <defs>
+              <marker id="arrow-hollow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                <path d="M0,0 L12,6 L0,12 Z" fill="#0d0f1a" stroke="#5b6ef5" stroke-width="1.5"/>
+              </marker>
+              <marker id="arrow-line" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                <path d="M0,0 L10,4 L0,8" fill="none" stroke="#7a81a8" stroke-width="1.5"/>
+              </marker>
+              <marker id="diamond-fill" markerWidth="14" markerHeight="10" refX="0" refY="5" orient="auto">
+                <path d="M7,0 L14,5 L7,10 L0,5 Z" fill="#f05a7e"/>
+              </marker>
+            </defs>
+
+            <!-- Persona (superclass) -->
+            <rect x="240" y="10" width="220" height="100" rx="4" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <rect x="240" y="10" width="220" height="30" rx="4" fill="#5b6ef5" fill-opacity="0.3"/>
+            <text x="350" y="30" fill="#fff" font-size="17" text-anchor="middle" font-weight="bold">Persona</text>
+            <line x1="240" y1="40" x2="460" y2="40" stroke="#5b6ef5" stroke-width="1"/>
+            <text x="255" y="58" fill="#e2e5f3" font-size="14">+ nombre : String</text>
+            <text x="255" y="73" fill="#e2e5f3" font-size="14">+ email : String</text>
+            <text x="255" y="88" fill="#e2e5f3" font-size="14">- id : Integer</text>
+            <line x1="240" y1="95" x2="460" y2="95" stroke="#252a42" stroke-width="1"/>
+            <text x="255" y="108" fill="#c8d0e8" font-size="14">+ contactar() : void</text>
+
+            <!-- Cliente -->
+            <rect x="60" y="200" width="220" height="110" rx="4" fill="#1c2035" stroke="#f05a7e" stroke-width="2"/>
+            <rect x="60" y="200" width="220" height="30" rx="4" fill="#f05a7e" fill-opacity="0.3"/>
+            <text x="170" y="220" fill="#fff" font-size="17" text-anchor="middle" font-weight="bold">Cliente</text>
+            <line x1="60" y1="230" x2="280" y2="230" stroke="#f05a7e" stroke-width="1"/>
+            <text x="75" y="248" fill="#e2e5f3" font-size="14">+ membresia : String</text>
+            <text x="75" y="263" fill="#e2e5f3" font-size="14">- saldo : Float</text>
+            <line x1="60" y1="270" x2="280" y2="270" stroke="#252a42" stroke-width="1"/>
+            <text x="75" y="285" fill="#c8d0e8" font-size="14">+ comprar() : void</text>
+            <text x="75" y="300" fill="#c8d0e8" font-size="14">+ verPedidos() : List</text>
+
+            <!-- Pedido -->
+            <rect x="420" y="200" width="220" height="130" rx="4" fill="#1c2035" stroke="#36d9b1" stroke-width="2"/>
+            <rect x="420" y="200" width="220" height="30" rx="4" fill="#36d9b1" fill-opacity="0.2"/>
+            <text x="530" y="220" fill="#fff" font-size="17" text-anchor="middle" font-weight="bold">Pedido</text>
+            <line x1="420" y1="230" x2="640" y2="230" stroke="#36d9b1" stroke-width="1"/>
+            <text x="435" y="248" fill="#e2e5f3" font-size="14">+ numero : String</text>
+            <text x="435" y="263" fill="#e2e5f3" font-size="14">+ fecha : Date</text>
+            <text x="435" y="278" fill="#e2e5f3" font-size="14">- total : Float</text>
+            <line x1="420" y1="285" x2="640" y2="285" stroke="#252a42" stroke-width="1"/>
+            <text x="435" y="302" fill="#c8d0e8" font-size="14">+ calcularTotal() : Float</text>
+            <text x="435" y="317" fill="#c8d0e8" font-size="14">+ cancelar() : void</text>
+
+            <!-- Inheritance arrows -->
+            <line x1="170" y1="200" x2="300" y2="110" stroke="#5b6ef5" stroke-width="1.5" marker-end="url(#arrow-hollow)"/>
+            <line x1="530" y1="200" x2="420" y2="110" stroke="#5b6ef5" stroke-width="1.5" marker-end="url(#arrow-hollow)"/>
+
+            <!-- Association: Cliente -> Pedido -->
+            <line x1="280" y1="255" x2="420" y2="255" stroke="#36d9b1" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-line)"/>
+            <text x="350" y="247" fill="#36d9b1" font-size="17" text-anchor="middle">1..*</text>
+            <text x="350" y="270" fill="#36d9b1" font-size="17" text-anchor="middle">realiza</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="examples-section">
+        <div class="diagram-label">Ejemplos Reales</div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-card-title">Sistema de Biblioteca</div>
+            <p>Libro hereda de Material. Préstamo asocia Usuario con Libro (1 usuario, muchos préstamos).</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Red Social</div>
+            <p>Clase Usuario con composición de Perfil. Publicación agrega Comentarios y Reacciones.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Hospital</div>
+            <p>Médico y Paciente heredan de Persona. Cita asocia ambos con fecha, sala y diagnóstico.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         SECUENCIA
+    ══════════════════════════════════ -->
+    <section id="secuencia">
+      <div class="section-hero">
+        <div class="hero-icon" style="background:rgba(54,217,177,0.15);">↔️</div>
+        <div class="hero-content">
+          <div class="type-tag" style="color:var(--accent3);">Diagrama de Interacción</div>
+          <h2>Diagrama de Secuencia</h2>
+          <p class="desc">Muestra cómo los objetos interactúan entre sí a lo largo del tiempo, describiendo el orden cronológico de los mensajes enviados. Ideal para documentar flujos de casos de uso.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">📌 Cuándo usarlo</div>
+          <p>Para documentar el flujo detallado de un caso de uso o analizar llamadas entre servicios/APIs.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔑 Elementos clave</div>
+          <p>Línea de vida (línea punteada), activación (rectángulo), mensaje sincrónico (flecha sólida), respuesta (flecha punteada).</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">⏱️ Tiempo</div>
+          <p>El eje vertical representa el tiempo. Los mensajes se leen de arriba a abajo en orden cronológico.</p>
+        </div>
+      </div>
+
+      <div class="diagram-area">
+        <div class="diagram-label">Diagrama · Secuencia — Inicio de Sesión</div>
+        <div class="diagram-box">
+          <svg viewBox="0 0 700 360" width="100%" style="max-width:660px">
+            <defs>
+              <marker id="arr-s" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#5b6ef5"/>
+              </marker>
+              <marker id="arr-r" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#7a81a8"/>
+              </marker>
+              <marker id="arr-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#36d9b1"/>
+              </marker>
+            </defs>
+
+            <!-- Headers -->
+            <rect x="30" y="10" width="100" height="36" rx="6" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <text x="80" y="32" fill="#e2e5f3" font-size="16" text-anchor="middle">:Usuario</text>
+
+            <rect x="210" y="10" width="100" height="36" rx="6" fill="#1c2035" stroke="#f05a7e" stroke-width="2"/>
+            <text x="260" y="32" fill="#e2e5f3" font-size="16" text-anchor="middle">:Frontend</text>
+
+            <rect x="390" y="10" width="100" height="36" rx="6" fill="#1c2035" stroke="#36d9b1" stroke-width="2"/>
+            <text x="440" y="32" fill="#e2e5f3" font-size="16" text-anchor="middle">:API</text>
+
+            <rect x="570" y="10" width="100" height="36" rx="6" fill="#1c2035" stroke="#7a81a8" stroke-width="2"/>
+            <text x="620" y="32" fill="#e2e5f3" font-size="16" text-anchor="middle">:DB</text>
+
+            <!-- Lifelines -->
+            <line x1="80" y1="46" x2="80" y2="350" stroke="#5b6ef5" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+            <line x1="260" y1="46" x2="260" y2="350" stroke="#f05a7e" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+            <line x1="440" y1="46" x2="440" y2="350" stroke="#36d9b1" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+            <line x1="620" y1="46" x2="620" y2="350" stroke="#7a81a8" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+
+            <!-- Activations -->
+            <rect x="74" y="80" width="12" height="200" fill="#5b6ef5" opacity="0.4" rx="2"/>
+            <rect x="254" y="100" width="12" height="160" fill="#f05a7e" opacity="0.4" rx="2"/>
+            <rect x="434" y="140" width="12" height="100" fill="#36d9b1" opacity="0.4" rx="2"/>
+            <rect x="614" y="160" width="12" height="60" fill="#7a81a8" opacity="0.4" rx="2"/>
+
+            <!-- Messages -->
+            <!-- 1 -->
+            <line x1="86" y1="90" x2="254" y2="105" stroke="#5b6ef5" stroke-width="1.5" marker-end="url(#arr-s)"/>
+            <text x="170" y="100" fill="#e2e5f3" font-size="14" text-anchor="middle">1: ingresar(user, pass)</text>
+
+            <!-- 2 -->
+            <line x1="266" y1="140" x2="434" y2="145" stroke="#f05a7e" stroke-width="1.5" marker-end="url(#arr-s)"/>
+            <text x="350" y="137" fill="#e2e5f3" font-size="14" text-anchor="middle">2: POST /auth/login</text>
+
+            <!-- 3 -->
+            <line x1="446" y1="165" x2="614" y2="165" stroke="#36d9b1" stroke-width="1.5" marker-end="url(#arr-s)"/>
+            <text x="530" y="158" fill="#e2e5f3" font-size="14" text-anchor="middle">3: SELECT usuario</text>
+
+            <!-- 4 return DB -->
+            <line x1="614" y1="210" x2="446" y2="210" stroke="#7a81a8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-r)"/>
+            <text x="530" y="205" fill="#c8d0e8" font-size="14" text-anchor="middle">4: {user_data}</text>
+
+            <!-- 5 return API -->
+            <line x1="434" y1="240" x2="266" y2="240" stroke="#36d9b1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-g)"/>
+            <text x="350" y="234" fill="#36d9b1" font-size="14" text-anchor="middle">5: 200 OK + JWT Token</text>
+
+            <!-- 6 return Frontend -->
+            <line x1="254" y1="270" x2="86" y2="270" stroke="#f05a7e" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-r)"/>
+            <text x="170" y="264" fill="#e2e5f3" font-size="14" text-anchor="middle">6: mostrar dashboard</text>
+
+            <!-- Step numbers -->
+            <text x="18" y="93" fill="#c8d0e8" font-size="17">①</text>
+            <text x="18" y="143" fill="#c8d0e8" font-size="17">②</text>
+            <text x="18" y="168" fill="#c8d0e8" font-size="17">③</text>
+            <text x="18" y="213" fill="#c8d0e8" font-size="17">④</text>
+            <text x="18" y="243" fill="#c8d0e8" font-size="17">⑤</text>
+            <text x="18" y="273" fill="#c8d0e8" font-size="17">⑥</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="examples-section">
+        <div class="diagram-label">Ejemplos Reales</div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-card-title">Pago en línea</div>
+            <p>Usuario → Frontend → API de Pagos → Banco → confirmación de vuelta al usuario.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Microservicios</div>
+            <p>API Gateway distribuye request → servicio de inventario → servicio de pedidos → notificaciones.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Recuperar contraseña</div>
+            <p>Usuario solicita reset → sistema genera token → envío por email → usuario redirigido a nuevo formulario.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         ACTIVIDADES
+    ══════════════════════════════════ -->
+    <section id="actividades">
+      <div class="section-hero">
+        <div class="hero-icon" style="background:rgba(255,180,50,0.12);">🔀</div>
+        <div class="hero-content">
+          <div class="type-tag" style="color:#f5a623;">Diagrama de Comportamiento</div>
+          <h2>Diagrama de Actividades</h2>
+          <p class="desc">Modela flujos de trabajo, procesos de negocio y algoritmos. Similar a un diagrama de flujo, pero con soporte para concurrencia y carriles de actividad (swimlanes) para asignar responsabilidades.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">📌 Cuándo usarlo</div>
+          <p>Para modelar procesos de negocio complejos, workflows, o describir el algoritmo de un método.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔑 Elementos clave</div>
+          <p>Inicio (círculo negro), actividad (rectángulo redondeado), decisión (rombo), fork/join (barra negra), fin (círculo con borde).</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🏊 Swimlanes</div>
+          <p>Divisiones verticales u horizontales que asignan actividades a actores o sistemas responsables.</p>
+        </div>
+      </div>
+
+      <div class="diagram-area">
+        <div class="diagram-label">Diagrama · Actividades — Proceso de Compra</div>
+        <div class="diagram-box">
+          <svg viewBox="0 0 700 380" width="100%" style="max-width:660px">
+            <defs>
+              <marker id="arr-a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#f5a623"/>
+              </marker>
+            </defs>
+
+            <!-- Swimlane backgrounds -->
+            <rect x="10" y="30" width="220" height="340" rx="4" fill="rgba(91,110,245,0.05)" stroke="#252a42" stroke-width="1"/>
+            <rect x="230" y="30" width="220" height="340" rx="4" fill="rgba(240,90,126,0.05)" stroke="#252a42" stroke-width="1"/>
+            <rect x="450" y="30" width="230" height="340" rx="4" fill="rgba(54,217,177,0.05)" stroke="#252a42" stroke-width="1"/>
+
+            <text x="120" y="50" fill="#5b6ef5" font-size="16" text-anchor="middle" font-weight="bold">Cliente</text>
+            <text x="340" y="50" fill="#f05a7e" font-size="16" text-anchor="middle" font-weight="bold">Sistema</text>
+            <text x="565" y="50" fill="#36d9b1" font-size="16" text-anchor="middle" font-weight="bold">Banco</text>
+
+            <!-- Start -->
+            <circle cx="120" cy="90" r="10" fill="#f5a623"/>
+            <line x1="120" y1="100" x2="120" y2="120" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+            <!-- Seleccionar -->
+            <rect x="55" y="120" width="130" height="36" rx="18" fill="#1c2035" stroke="#f5a623" stroke-width="1.5"/>
+            <text x="120" y="142" fill="#e2e5f3" font-size="14" text-anchor="middle">Seleccionar producto</text>
+            <line x1="185" y1="138" x2="245" y2="138" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+            <!-- Verificar stock -->
+            <rect x="245" y="120" width="160" height="36" rx="18" fill="#1c2035" stroke="#f05a7e" stroke-width="1.5"/>
+            <text x="325" y="142" fill="#e2e5f3" font-size="14" text-anchor="middle">Verificar disponibilidad</text>
+            <line x1="325" y1="156" x2="325" y2="180" stroke="#f05a7e" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+            <!-- Decision diamond -->
+            <polygon points="325,180 365,205 325,230 285,205" fill="#1c2035" stroke="#f5a623" stroke-width="1.5"/>
+            <text x="325" y="209" fill="#e2e5f3" font-size="17" text-anchor="middle">¿Stock?</text>
+
+            <!-- Sí -->
+            <line x1="365" y1="205" x2="440" y2="205" stroke="#36d9b1" stroke-width="1.5" marker-end="url(#arr-a)"/>
+            <text x="400" y="198" fill="#36d9b1" font-size="17">Sí</text>
+
+            <!-- No -->
+            <line x1="325" y1="230" x2="325" y2="265" stroke="#f05a7e" stroke-width="1.5" marker-end="url(#arr-a)"/>
+            <text x="335" y="252" fill="#f05a7e" font-size="17">No</text>
+            <rect x="248" y="265" width="155" height="36" rx="18" fill="#1c2035" stroke="#f05a7e" stroke-width="1.5"/>
+            <text x="325" y="287" fill="#e2e5f3" font-size="14" text-anchor="middle">Notificar sin stock</text>
+
+            <!-- Procesar pago -->
+            <rect x="455" y="185" width="155" height="36" rx="18" fill="#1c2035" stroke="#36d9b1" stroke-width="1.5"/>
+            <text x="532" y="207" fill="#e2e5f3" font-size="14" text-anchor="middle">Procesar pago</text>
+            <line x1="532" y1="221" x2="532" y2="255" stroke="#36d9b1" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+            <!-- Confirmar -->
+            <rect x="455" y="255" width="155" height="36" rx="18" fill="#1c2035" stroke="#36d9b1" stroke-width="1.5"/>
+            <text x="532" y="277" fill="#e2e5f3" font-size="14" text-anchor="middle">Confirmar pedido</text>
+            <line x1="455" y1="273" x2="200" y2="320" stroke="#36d9b1" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+            <!-- Enviar notificación -->
+            <rect x="55" y="308" width="155" height="36" rx="18" fill="#1c2035" stroke="#5b6ef5" stroke-width="1.5"/>
+            <text x="132" y="330" fill="#e2e5f3" font-size="14" text-anchor="middle">Ver confirmación</text>
+            <line x1="132" y1="344" x2="132" y2="360" stroke="#5b6ef5" stroke-width="1.5" marker-end="url(#arr-a)"/>
+
+            <!-- End -->
+            <circle cx="132" cy="368" r="8" fill="none" stroke="#f5a623" stroke-width="2"/>
+            <circle cx="132" cy="368" r="5" fill="#f5a623"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="examples-section">
+        <div class="diagram-label">Ejemplos Reales</div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-card-title">Onboarding de usuario</div>
+            <p>Registro → verificar email → completar perfil → tutorial → acceso al dashboard.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Aprobación de préstamo</div>
+            <p>Solicitud → evaluación crediticia → decisión (fork: aprobado/rechazado) → notificación.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">CI/CD Pipeline</div>
+            <p>Push → build → tests paralelos → análisis de código → deploy a staging → aprobación → producción.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         ESTADO
+    ══════════════════════════════════ -->
+    <section id="estado">
+      <div class="section-hero">
+        <div class="hero-icon" style="background:rgba(168,85,247,0.15);">🔄</div>
+        <div class="hero-content">
+          <div class="type-tag" style="color:#a855f7;">Diagrama de Comportamiento</div>
+          <h2>Diagrama de Estado</h2>
+          <p class="desc">Modela el comportamiento de un objeto a través del tiempo, mostrando todos los estados posibles que puede tener y las transiciones que lo llevan de un estado a otro ante un evento.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">📌 Cuándo usarlo</div>
+          <p>Para objetos con comportamiento complejo dependiente de su estado: pedidos, reservas, sesiones de usuario.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔑 Elementos clave</div>
+          <p>Estado (rectángulo redondeado), transición (flecha con etiqueta evento[guardia]/acción), estado inicial (círculo negro), estado final.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">📝 Notación</div>
+          <p>Transición: <strong>evento[condición]/acción</strong>. Ejemplo: pagar[saldo_ok]/emitir_factura</p>
+        </div>
+      </div>
+
+      <div class="diagram-area">
+        <div class="diagram-label">Diagrama · Estado — Ciclo de Pedido</div>
+        <div class="diagram-box">
+          <svg viewBox="0 0 700 300" width="100%" style="max-width:660px">
+            <defs>
+              <marker id="arr-st" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#a855f7"/>
+              </marker>
+            </defs>
+
+            <!-- Start -->
+            <circle cx="50" cy="150" r="12" fill="#a855f7"/>
+            <line x1="62" y1="150" x2="100" y2="150" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arr-st)"/>
+
+            <!-- States -->
+            <!-- Pendiente -->
+            <rect x="100" y="120" width="120" height="60" rx="30" fill="#1c2035" stroke="#a855f7" stroke-width="2"/>
+            <text x="160" y="148" fill="#e2e5f3" font-size="16" text-anchor="middle">Pendiente</text>
+            <text x="160" y="163" fill="#c8d0e8" font-size="17" text-anchor="middle">entry/registrar</text>
+
+            <!-- Confirmado -->
+            <rect x="280" y="60" width="120" height="60" rx="30" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <text x="340" y="88" fill="#e2e5f3" font-size="16" text-anchor="middle">Confirmado</text>
+            <text x="340" y="103" fill="#c8d0e8" font-size="17" text-anchor="middle">entry/notificar</text>
+
+            <!-- Cancelado -->
+            <rect x="280" y="210" width="120" height="60" rx="30" fill="#1c2035" stroke="#f05a7e" stroke-width="2"/>
+            <text x="340" y="238" fill="#e2e5f3" font-size="16" text-anchor="middle">Cancelado</text>
+            <text x="340" y="253" fill="#c8d0e8" font-size="17" text-anchor="middle">entry/reembolsar</text>
+
+            <!-- Enviado -->
+            <rect x="460" y="60" width="120" height="60" rx="30" fill="#1c2035" stroke="#36d9b1" stroke-width="2"/>
+            <text x="520" y="88" fill="#e2e5f3" font-size="16" text-anchor="middle">Enviado</text>
+            <text x="520" y="103" fill="#c8d0e8" font-size="17" text-anchor="middle">entry/tracking</text>
+
+            <!-- Entregado -->
+            <rect x="460" y="210" width="120" height="60" rx="30" fill="#1c2035" stroke="#f5a623" stroke-width="2"/>
+            <text x="520" y="238" fill="#e2e5f3" font-size="16" text-anchor="middle">Entregado</text>
+            <text x="520" y="253" fill="#c8d0e8" font-size="17" text-anchor="middle">entry/cerrar</text>
+
+            <!-- Transitions -->
+            <line x1="220" y1="135" x2="280" y2="100" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arr-st)"/>
+            <text x="240" y="112" fill="#e2e5f3" font-size="17">confirmar</text>
+
+            <line x1="220" y1="165" x2="280" y2="228" stroke="#f05a7e" stroke-width="1.5" marker-end="url(#arr-st)"/>
+            <text x="238" y="205" fill="#f05a7e" font-size="17">cancelar</text>
+
+            <line x1="400" y1="90" x2="460" y2="90" stroke="#36d9b1" stroke-width="1.5" marker-end="url(#arr-st)"/>
+            <text x="430" y="83" fill="#36d9b1" font-size="17">despachar</text>
+
+            <line x1="520" y1="120" x2="520" y2="210" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr-st)"/>
+            <text x="530" y="170" fill="#f5a623" font-size="17">entregar</text>
+
+            <!-- Final -->
+            <circle cx="635" cy="240" r="10" fill="none" stroke="#a855f7" stroke-width="2"/>
+            <circle cx="635" cy="240" r="6" fill="#a855f7"/>
+            <line x1="580" y1="240" x2="625" y2="240" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arr-st)"/>
+
+            <!-- Also final from cancelled -->
+            <line x1="400" y1="240" x2="625" y2="240" stroke="#f05a7e" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-st)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="examples-section">
+        <div class="diagram-label">Ejemplos Reales</div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-card-title">Sesión de usuario</div>
+            <p>Anónimo → autenticado → bloqueado (intent fallidos) → expirado → cerrado.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Semáforo</div>
+            <p>Rojo → Verde → Amarillo → Rojo. Con transiciones temporizadas y estados de emergencia.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Ticket de soporte</div>
+            <p>Abierto → Asignado → En progreso → Resuelto → Cerrado. Opcionalmente: Reabierto.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         COMPONENTES
+    ══════════════════════════════════ -->
+    <section id="componentes">
+      <div class="section-hero">
+        <div class="hero-icon" style="background:rgba(54,217,177,0.12);">🧩</div>
+        <div class="hero-content">
+          <div class="type-tag" style="color:var(--accent3);">Diagrama de Estructura</div>
+          <h2>Diagrama de Componentes</h2>
+          <p class="desc">Representa la arquitectura lógica del software: los módulos, librerías, servicios y sus interfaces. Muestra cómo el sistema está dividido en partes reutilizables e intercambiables.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">📌 Cuándo usarlo</div>
+          <p>Para documentar la arquitectura de un sistema, especialmente en microservicios o sistemas modulares.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔑 Elementos clave</div>
+          <p>Componente (rectángulo con ícono «component»), interfaz provista (círculo), interfaz requerida (semicírculo), dependencia.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔌 Interfaces</div>
+          <p>Puerto provisto (lollipop): lo que el componente ofrece. Puerto requerido (socket): lo que necesita de otros.</p>
+        </div>
+      </div>
+
+      <div class="diagram-area">
+        <div class="diagram-label">Diagrama · Componentes — Arquitectura Web</div>
+        <div class="diagram-box">
+          <svg viewBox="0 0 700 320" width="100%" style="max-width:660px">
+            <defs>
+              <marker id="arr-c" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#36d9b1"/>
+              </marker>
+              <marker id="dep-c" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#7a81a8"/>
+              </marker>
+            </defs>
+
+            <!-- Browser -->
+            <rect x="20" y="110" width="130" height="80" rx="6" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <rect x="20" y="110" width="130" height="24" rx="6" fill="#5b6ef5" fill-opacity="0.3"/>
+            <text x="30" y="117" fill="#c8d0e8" font-size="14">«device»</text>
+            <text x="85" y="126" fill="#e2e5f3" font-size="14" text-anchor="middle">Browser</text>
+            <text x="85" y="158" fill="#c8d0e8" font-size="17" text-anchor="middle">React App</text>
+            <text x="85" y="172" fill="#c8d0e8" font-size="17" text-anchor="middle">SPA</text>
+
+            <!-- API Gateway -->
+            <rect x="220" y="60" width="150" height="80" rx="6" fill="#1c2035" stroke="#f05a7e" stroke-width="2"/>
+            <rect x="220" y="60" width="150" height="24" rx="6" fill="#f05a7e" fill-opacity="0.3"/>
+            <text x="230" y="68" fill="#c8d0e8" font-size="14">«component»</text>
+            <text x="295" y="77" fill="#e2e5f3" font-size="14" text-anchor="middle">API Gateway</text>
+            <text x="295" y="108" fill="#c8d0e8" font-size="17" text-anchor="middle">Auth / Rate limit</text>
+            <text x="295" y="122" fill="#c8d0e8" font-size="17" text-anchor="middle">Load balancer</text>
+
+            <!-- Auth Service -->
+            <rect x="220" y="200" width="150" height="70" rx="6" fill="#1c2035" stroke="#a855f7" stroke-width="2"/>
+            <rect x="220" y="200" width="150" height="24" rx="6" fill="#a855f7" fill-opacity="0.3"/>
+            <text x="230" y="208" fill="#c8d0e8" font-size="14">«service»</text>
+            <text x="295" y="217" fill="#e2e5f3" font-size="14" text-anchor="middle">Auth Service</text>
+            <text x="295" y="248" fill="#c8d0e8" font-size="17" text-anchor="middle">JWT / OAuth2</text>
+
+            <!-- Product Service -->
+            <rect x="450" y="40" width="150" height="70" rx="6" fill="#1c2035" stroke="#36d9b1" stroke-width="2"/>
+            <rect x="450" y="40" width="150" height="24" rx="6" fill="#36d9b1" fill-opacity="0.2"/>
+            <text x="460" y="48" fill="#c8d0e8" font-size="14">«service»</text>
+            <text x="525" y="57" fill="#e2e5f3" font-size="14" text-anchor="middle">Product Service</text>
+            <text x="525" y="88" fill="#c8d0e8" font-size="17" text-anchor="middle">CRUD productos</text>
+
+            <!-- Order Service -->
+            <rect x="450" y="160" width="150" height="70" rx="6" fill="#1c2035" stroke="#f5a623" stroke-width="2"/>
+            <rect x="450" y="160" width="150" height="24" rx="6" fill="#f5a623" fill-opacity="0.2"/>
+            <text x="460" y="168" fill="#c8d0e8" font-size="14">«service»</text>
+            <text x="525" y="177" fill="#e2e5f3" font-size="14" text-anchor="middle">Order Service</text>
+            <text x="525" y="208" fill="#c8d0e8" font-size="17" text-anchor="middle">Gestión pedidos</text>
+
+            <!-- DB -->
+            <rect x="450" y="280" width="150" height="30" rx="6" fill="#1c2035" stroke="#7a81a8" stroke-width="2"/>
+            <text x="525" y="299" fill="#e2e5f3" font-size="14" text-anchor="middle">PostgreSQL DB</text>
+
+            <!-- Connections -->
+            <line x1="150" y1="150" x2="220" y2="105" stroke="#5b6ef5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-c)"/>
+            <text x="183" y="120" fill="#5b6ef5" font-size="16">HTTPS</text>
+
+            <line x1="370" y1="90" x2="450" y2="75" stroke="#36d9b1" stroke-width="1.5" marker-end="url(#arr-c)"/>
+            <line x1="370" y1="110" x2="450" y2="195" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr-c)"/>
+            <line x1="295" y1="140" x2="295" y2="200" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-c)"/>
+            <line x1="525" y1="230" x2="525" y2="280" stroke="#7a81a8" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#dep-c)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="examples-section">
+        <div class="diagram-label">Ejemplos Reales</div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-card-title">Aplicación Móvil</div>
+            <p>App iOS/Android → API REST → módulos: Autenticación, Catálogo, Carrito, Pagos, Notificaciones.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Plataforma SaaS</div>
+            <p>Frontend → API Gateway → microservicios independientes con colas de mensajes (Kafka/RabbitMQ).</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">ERP Empresarial</div>
+            <p>Módulos de contabilidad, RRHH, inventario y CRM conectados a un bus de servicios empresarial (ESB).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════
+         DESPLIEGUE
+    ══════════════════════════════════ -->
+    <section id="despliegue">
+      <div class="section-hero">
+        <div class="hero-icon" style="background:rgba(245,166,35,0.12);">🖥️</div>
+        <div class="hero-content">
+          <div class="type-tag" style="color:#f5a623;">Diagrama de Estructura</div>
+          <h2>Diagrama de Despliegue</h2>
+          <p class="desc">Describe la arquitectura física del sistema: los nodos de hardware, entornos de ejecución, y cómo los artefactos de software se distribuyen entre ellos. Fundamental para planear infraestructura.</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">📌 Cuándo usarlo</div>
+          <p>Para planificar la infraestructura, documentar entornos de producción y comunicar decisiones de hosting al equipo.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">🔑 Elementos clave</div>
+          <p>Nodo (cubo 3D), artefacto (rectángulo con «artifact»), entorno de ejecución, comunicación entre nodos.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">☁️ Nube</div>
+          <p>Los nodos pueden representar VMs, contenedores Docker, pods de Kubernetes, o regiones de AWS/GCP/Azure.</p>
+        </div>
+      </div>
+
+      <div class="diagram-area">
+        <div class="diagram-label">Diagrama · Despliegue — Infraestructura Cloud</div>
+        <div class="diagram-box">
+          <svg viewBox="0 0 700 320" width="100%" style="max-width:660px">
+            <defs>
+              <marker id="arr-d" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 z" fill="#f5a623"/>
+              </marker>
+            </defs>
+
+            <!-- Cloud boundary -->
+            <rect x="180" y="10" width="500" height="295" rx="8" fill="rgba(245,166,35,0.04)" stroke="#f5a623" stroke-width="1" stroke-dasharray="8,4"/>
+            <text x="430" y="28" fill="#f5a623" font-size="14" text-anchor="middle">«cloud» AWS Region us-east-1</text>
+
+            <!-- Client node -->
+            <rect x="20" y="100" width="130" height="90" rx="4" fill="#1c2035" stroke="#5b6ef5" stroke-width="2"/>
+            <polygon points="20,100 30,90 160,90 150,100" fill="#5b6ef5" opacity="0.4"/>
+            <polygon points="150,100 160,90 160,180 150,190" fill="#5b6ef5" opacity="0.2"/>
+            <text x="85" y="145" fill="#e2e5f3" font-size="14" text-anchor="middle">Dispositivo</text>
+            <text x="85" y="158" fill="#c8d0e8" font-size="17" text-anchor="middle">«browser»</text>
+            <text x="85" y="171" fill="#c8d0e8" font-size="17" text-anchor="middle">React SPA</text>
+
+            <!-- CDN -->
+            <rect x="195" y="40" width="130" height="70" rx="4" fill="#1c2035" stroke="#36d9b1" stroke-width="2"/>
+            <polygon points="195,40 205,30 335,30 325,40" fill="#36d9b1" opacity="0.3"/>
+            <polygon points="325,40 335,30 335,110 325,120" fill="#36d9b1" opacity="0.15"/>
+            <text x="260" y="75" fill="#e2e5f3" font-size="14" text-anchor="middle">CloudFront CDN</text>
+            <text x="260" y="90" fill="#c8d0e8" font-size="17" text-anchor="middle">«artifact» app.js</text>
+
+            <!-- Load Balancer -->
+            <rect x="380" y="40" width="140" height="70" rx="4" fill="#1c2035" stroke="#f05a7e" stroke-width="2"/>
+            <polygon points="380,40 390,30 530,30 520,40" fill="#f05a7e" opacity="0.3"/>
+            <polygon points="520,40 530,30 530,110 520,120" fill="#f05a7e" opacity="0.15"/>
+            <text x="450" y="72" fill="#e2e5f3" font-size="14" text-anchor="middle">Load Balancer</text>
+            <text x="450" y="87" fill="#c8d0e8" font-size="17" text-anchor="middle">ALB / NGINX</text>
+
+            <!-- EC2 containers -->
+            <rect x="230" y="160" width="130" height="80" rx="4" fill="#1c2035" stroke="#a855f7" stroke-width="2"/>
+            <polygon points="230,160 240,150 370,150 360,160" fill="#a855f7" opacity="0.3"/>
+            <polygon points="360,160 370,150 370,240 360,250" fill="#a855f7" opacity="0.15"/>
+            <text x="295" y="198" fill="#e2e5f3" font-size="14" text-anchor="middle">EC2 App Server</text>
+            <text x="295" y="213" fill="#c8d0e8" font-size="17" text-anchor="middle">Node.js API</text>
+            <text x="295" y="227" fill="#c8d0e8" font-size="17" text-anchor="middle">«artifact» api.jar</text>
+
+            <!-- RDS -->
+            <rect x="425" y="160" width="130" height="80" rx="4" fill="#1c2035" stroke="#f5a623" stroke-width="2"/>
+            <polygon points="425,160 435,150 565,150 555,160" fill="#f5a623" opacity="0.3"/>
+            <polygon points="555,160 565,150 565,240 555,250" fill="#f5a623" opacity="0.15"/>
+            <text x="490" y="198" fill="#e2e5f3" font-size="14" text-anchor="middle">RDS Instance</text>
+            <text x="490" y="213" fill="#c8d0e8" font-size="17" text-anchor="middle">PostgreSQL</text>
+            <text x="490" y="227" fill="#c8d0e8" font-size="17" text-anchor="middle">Multi-AZ</text>
+
+            <!-- S3 -->
+            <rect x="580" y="100" width="90" height="60" rx="4" fill="#1c2035" stroke="#36d9b1" stroke-width="2"/>
+            <text x="625" y="128" fill="#e2e5f3" font-size="14" text-anchor="middle">S3 Bucket</text>
+            <text x="625" y="143" fill="#c8d0e8" font-size="17" text-anchor="middle">Storage</text>
+
+            <!-- Connections -->
+            <line x1="150" y1="145" x2="195" y2="82" stroke="#5b6ef5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-d)"/>
+            <text x="162" y="105" fill="#5b6ef5" font-size="16">HTTPS</text>
+
+            <line x1="325" y1="75" x2="380" y2="70" stroke="#36d9b1" stroke-width="1.5" marker-end="url(#arr-d)"/>
+            <line x1="450" y1="110" x2="380" y2="180" stroke="#f05a7e" stroke-width="1.5" marker-end="url(#arr-d)"/>
+            <line x1="360" y1="200" x2="425" y2="200" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-d)"/>
+            <line x1="555" y1="185" x2="580" y2="140" stroke="#f5a623" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-d)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="examples-section">
+        <div class="diagram-label">Ejemplos Reales</div>
+        <div class="examples-grid">
+          <div class="example-card">
+            <div class="example-card-title">Kubernetes Cluster</div>
+            <p>Master node + worker nodes con pods distribuidos, servicios, ingress controller y volúmenes persistentes.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">Multi-región</div>
+            <p>Réplicas en us-east, eu-west y ap-south con Route 53 para DNS geolocalizado y failover automático.</p>
+          </div>
+          <div class="example-card">
+            <div class="example-card-title">On-premise + Cloud híbrido</div>
+            <p>Datacenter corporativo conectado via VPN a AWS VPC con servicios críticos en ambos entornos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  Guía de Diagramas UML · Unified Modeling Language v2.5 · todos los diagramas son inline SVG
+</footer>
+
+<script>
+  function mostrar(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
